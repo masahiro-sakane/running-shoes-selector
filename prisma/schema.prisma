@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ランニングシューズモデル
+model Shoe {
+  id               String   @id @default(cuid())
+  brand            String
+  model            String
+  version          String?
+  year             Int?
+  price            Int      // 円（定価）
+  currency         String   @default("JPY")
+
+  // 物理スペック
+  weightG          Int?     // 重量（グラム）27cm基準
+  dropMm           Int?     // ドロップ（mm）
+  stackHeightHeel  Int?     // スタックハイト ヒール（mm）
+  stackHeightFore  Int?     // スタックハイト フォアフット（mm）
+
+  // 素材・構造
+  cushionType      String?  // "max" | "moderate" | "minimal" | "carbon"
+  cushionMaterial  String?  // 素材名
+  outsoleMaterial  String?  // アウトソール素材
+  upperMaterial    String?  // アッパー素材
+
+  // 適合情報
+  widthOptions     String   @default("standard") // "narrow,standard,wide" など
+  surfaceType      String   @default("road")     // "road" | "trail" | "track" | "road,trail"
+  pronationType    String   @default("neutral")  // "neutral" | "stability" | "motion_control"
+  category         String                        // "daily" | "tempo" | "race" | "recovery" | "trail"
+
+  // その他
+  durabilityKm     Int?     // 推定走行可能距離（km）
+  officialUrl      String?  // メーカー公式URL
+  imageUrl         String?  // メイン画像URL
+  description      String?  // 説明文
+
+  releaseDate      DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // リレーション
+  trainingFit      TrainingFit?
+  reviews          Review[]
+
+  @@unique([brand, model])
+  @@index([brand])
+  @@index([category])
+  @@index([price])
+}
+
+// トレーニング適性（シューズ別スコア）
+model TrainingFit {
+  id         String @id @default(cuid())
+  shoeId     String @unique
+  shoe       Shoe   @relation(fields: [shoeId], references: [id], onDelete: Cascade)
+
+  // 各トレーニング種別の適性スコア（1-5）
+  dailyJog   Int    @default(3) // デイリージョグ
+  paceRun    Int    @default(3) // ペース走
+  interval   Int    @default(3) // インターバル走
+  longRun    Int    @default(3) // ロング走
+  race       Int    @default(3) // レース
+  recovery   Int    @default(3) // リカバリー
+}
+
+// ユーザーレビュー（Phase 4用、今は基盤のみ）
+model Review {
+  id        String   @id @default(cuid())
+  shoeId    String
+  shoe      Shoe     @relation(fields: [shoeId], references: [id], onDelete: Cascade)
+  rating    Int      // 1-5
+  comment   String?
+  createdAt DateTime @default(now())
+
+  @@index([shoeId])
+}
