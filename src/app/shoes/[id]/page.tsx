@@ -7,6 +7,7 @@ import TrainingFitBar from "@/components/common/TrainingFitBar";
 import ShoeCard from "@/components/shoes/ShoeCard";
 import FavoriteButton from "@/components/favorites/FavoriteButton";
 import AddToMyShoeButton from "@/components/tracker/AddToMyShoeButton";
+import ShareButtons from "@/components/share/ShareButtons";
 import {
   formatPrice,
   formatWeight,
@@ -25,6 +26,9 @@ import {
 // ISR: 1時間ごとに再検証
 export const revalidate = 3600;
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://running-shoes-selector.vercel.app";
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }
@@ -36,6 +40,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const name = formatBrandModel(shoe.brand, shoe.model, shoe.version);
   const description = shoe.description ?? `${name}のスペック・特徴・トレーニング適性を詳しく解説。重量${shoe.weightG ? shoe.weightG + "g" : ""}、ドロップ${shoe.dropMm ? shoe.dropMm + "mm" : ""}。`;
+  const ogImage = shoe.imageUrl
+    ? [{ url: shoe.imageUrl, alt: name }]
+    : [{ url: `/api/og/shoe/${id}`, width: 1200, height: 630 }];
+
   return {
     title: name,
     description,
@@ -43,12 +51,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: `${name} | RunSelect`,
       description,
       type: "website",
-      ...(shoe.imageUrl ? { images: [{ url: shoe.imageUrl, alt: name }] } : {}),
+      images: ogImage,
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: `${name} | RunSelect`,
       description,
+      images: [shoe.imageUrl ?? `/api/og/shoe/${id}`],
     },
   };
 }
@@ -193,7 +202,7 @@ export default async function ShoeDetailPage({ params }: PageProps) {
           </div>
 
           {/* アクションボタン */}
-          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "16px" }}>
             <FavoriteButton shoeId={shoe.id} shoeName={name} />
             <AddToMyShoeButton shoeId={shoe.id} />
             <Link
@@ -232,6 +241,13 @@ export default async function ShoeDetailPage({ params }: PageProps) {
               </a>
             )}
           </div>
+
+          {/* SNSシェアボタン */}
+          <ShareButtons
+            url={`${SITE_URL}/shoes/${shoe.id}`}
+            title={`${name}をRunSelectで確認`}
+            hashtags={["RunSelect", "ランニングシューズ", shoe.brand]}
+          />
         </div>
       </div>
 

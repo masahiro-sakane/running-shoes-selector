@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import CompareTable from "@/components/compare/CompareTable";
 import CompareRadarChart from "@/components/compare/CompareRadarChart";
+import ShareButtons from "@/components/share/ShareButtons";
 import { useCompare } from "@/contexts/CompareContext";
 import { COMPARE_MAX_ITEMS } from "@/lib/utils/constants";
 import type { ShoeWithFit } from "@/lib/services/shoe-service";
@@ -110,24 +111,35 @@ export default function CompareClient({ initialShoes, initialIds }: CompareClien
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
           {shoes.length >= 2 && (
-            <button
-              onClick={handleCopyUrl}
-              style={{
-                padding: "8px 16px",
-                background: "#ffffff",
-                border: "2px solid #dfe1e6",
-                borderRadius: "4px",
-                fontSize: "13px",
-                fontWeight: 600,
-                cursor: "pointer",
-                color: copied ? "#006644" : "#42526e",
-                transition: "all 0.15s",
-              }}
-            >
-              {copied ? "✓ コピーしました" : "🔗 URLをコピー"}
-            </button>
+            <>
+              <button
+                onClick={handleCopyUrl}
+                style={{
+                  padding: "8px 16px",
+                  background: "#ffffff",
+                  border: "2px solid #dfe1e6",
+                  borderRadius: "4px",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  color: copied ? "#006644" : "#42526e",
+                  transition: "all 0.15s",
+                }}
+              >
+                {copied ? "コピーしました" : "URLをコピー"}
+              </button>
+              <ShareButtons
+                url={
+                  typeof window !== "undefined"
+                    ? `${window.location.origin}/compare?ids=${shoes.map((s) => s.id).join(",")}`
+                    : `/compare?ids=${shoes.map((s) => s.id).join(",")}`
+                }
+                title="RunSelectでシューズを比較中"
+                hashtags={["RunSelect", "ランニング", "シューズ"]}
+              />
+            </>
           )}
           {shoes.length > 0 && (
             <button

@@ -100,10 +100,43 @@
 - [x] 2-F-9 テスト（ユニット: training-plan-service + rotation-service + training-plan-schema）
 
 ## Phase 3: 外部連携
-- [ ] 価格比較（楽天API / Amazon PA-APIで実売価格取得）
-- [ ] 購入リンク（アフィリエイトリンク生成）
-- [ ] 価格変動通知（お気に入りシューズの値下げ通知）
-- [ ] SNSシェア（比較結果のOGP画像自動生成）
+
+### Phase 3-A: 楽天API連携 + 価格表示基盤
+- [ ] 3-A-1 PriceRecord / PriceAlert / PriceNotification モデル + マイグレーション
+- [ ] 3-A-2 価格関連バリデーションスキーマ（price-schema.ts）
+- [ ] 3-A-3 楽天商品検索APIサービス（rakuten-api-service.ts）
+- [ ] 3-A-4 価格サービス（price-service.ts: 保存・取得・キャッシュ）
+- [ ] 3-A-5 アフィリエイトリンク生成サービス（affiliate-service.ts）
+- [ ] 3-A-6 価格取得API（GET /api/prices/[shoeId]）
+- [ ] 3-A-7 管理画面向け楽天商品検索API（GET /api/prices/search）
+- [ ] 3-A-8 価格比較コンポーネント（PriceComparison）
+- [ ] 3-A-9 購入リンクコンポーネント（BuyLinks、PRラベル付き）
+- [ ] 3-A-10 シューズ詳細ページに価格セクション統合
+- [ ] 3-A-11 シューズカードに最安値バッジ追加
+- [ ] 3-A-12 テスト（ユニット: rakuten-api + price + affiliate + price-schema）
+
+### Phase 3-B: Amazon PA-API連携（審査通過後）
+- [ ] 3-B-1 Amazon PA-APIサービス（amazon-api-service.ts）
+- [ ] 3-B-2 price-service のAmazonソース拡張
+- [ ] 3-B-3 テスト（ユニット: amazon-api）
+
+### Phase 3-C: 価格変動通知
+- [ ] 3-C-1 通知サービス（notification-service.ts）
+- [ ] 3-C-2 Vercel Cron Job（6時間おき価格更新 + 通知チェック）
+- [ ] 3-C-3 価格アラートAPI（/api/price-alerts CRUD）
+- [ ] 3-C-4 通知一覧API（/api/notifications）
+- [ ] 3-C-5 価格アラート設定ボタン（PriceAlertButton）
+- [ ] 3-C-6 ヘッダー通知ベルアイコン + ドロップダウン
+- [ ] 3-C-7 テスト（ユニット + 統合: notification + cron + price-alerts）
+
+### Phase 3-D: OGP画像生成 + SNSシェア ✅ 完了
+- [x] 3-D-1 比較結果OGP画像生成（/api/og/compare）
+- [x] 3-D-2 シューズ個別OGP画像生成（/api/og/shoe/[id]）
+- [x] 3-D-3 比較ページのmetadata更新（動的OGP画像）
+- [x] 3-D-4 シューズ詳細ページのmetadata更新（動的OGP画像）
+- [x] 3-D-5 SNSシェアボタン（ShareButtons: X / LINE / はてブ）
+- [x] 3-D-6 シェアボタンの統合（比較ページ + 詳細ページ）
+- [x] 3-D-7 テスト（ユニット: ShareButtons）
 
 ## Phase 4: コミュニティ
 - [ ] ユーザーレビュー（星評価 + テキストレビュー投稿）
