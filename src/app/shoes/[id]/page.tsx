@@ -6,6 +6,7 @@ import CategoryBadge from "@/components/common/CategoryBadge";
 import TrainingFitBar from "@/components/common/TrainingFitBar";
 import ShoeCard from "@/components/shoes/ShoeCard";
 import FavoriteButton from "@/components/favorites/FavoriteButton";
+import AddToMyShoeButton from "@/components/tracker/AddToMyShoeButton";
 import {
   formatPrice,
   formatWeight,
@@ -194,6 +195,7 @@ export default async function ShoeDetailPage({ params }: PageProps) {
           {/* アクションボタン */}
           <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
             <FavoriteButton shoeId={shoe.id} shoeName={name} />
+            <AddToMyShoeButton shoeId={shoe.id} />
             <Link
               href={`/compare?ids=${shoe.id}`}
               style={{

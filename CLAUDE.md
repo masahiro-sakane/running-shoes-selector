@@ -1,4 +1,10 @@
 
+
+## 作業ディレクトリ
+作業ディレクトリは以下で、Bash Commandは以下から実行して下さい。
+C:\Develop\workspace\claude\runnning-shoes-sellector
+
+
 回答は日本語でして下さい。
 
 タスクは@docs/TODO.mdで管理して完了したら都度マークして下さい。

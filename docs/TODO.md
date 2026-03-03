@@ -1,6 +1,6 @@
 # TODO: マラソントレーニング用ランニングシューズ比較検討サービス
 
-最終更新: 2026-03-05
+最終更新: 2026-03-03
 
 ## Phase 1: MVP（最小限の実用製品）
 
@@ -37,14 +37,67 @@
 - [x] 5.4 パフォーマンス最適化（ISR設定）
 - [x] 5.5 E2Eテスト（主要ユーザーフロー）
 - [x] 5.6-pre Dockerローカル開発環境構築（PostgreSQL移行完了）
-- [ ] 5.6 デプロイ（Vercelへの本番デプロイ）
+- [x] 5.6 デプロイ（Vercelへの本番デプロイ）
 
-## Phase 2: 機能拡充（MVP完了後）
-- [ ] 管理画面（CMS）- シューズデータのCRUD、画像アップロード
-- [ ] ユーザー認証（Supabase Auth、お気に入りのクラウド同期）
-- [ ] 用語集/ガイド（ドロップ、スタックハイト、プロネーション等の解説）
-- [ ] トレーニング計画連携（週間メニューに基づくローテーション提案）
-- [ ] シューズ寿命トラッカー（累計走行距離入力、交換時期通知）
+## Phase 2: 機能拡充
+
+### Phase 2-A: 用語集/ガイド（認証不要、独立実装）✅ 完了
+- [x] 2-A-1 用語データ定義（src/data/glossary.ts、24用語以上）
+- [x] 2-A-2 用語集一覧ページ（/glossary、カテゴリ別タブ、キーワード検索）
+- [x] 2-A-3 用語集コンポーネント（GlossaryList、GlossaryItem、GlossarySearch）
+- [x] 2-A-4 ヘッダーナビゲーション更新（用語集リンク追加）
+- [x] 2-A-5 SEO対応（metadata、構造化データ DefinedTermSet）
+- [x] 2-A-6 テスト（ユニット）
+
+### Phase 2-B: Supabase Auth 導入（認証基盤）✅ 完了
+- [x] 2-B-1 Supabase プロジェクト設定（認証プロバイダー、環境変数）
+- [x] 2-B-2 Supabaseクライアント初期化（client.ts、server.ts）
+- [x] 2-B-3 Next.js Proxy（セッション管理、/admin/* 保護）
+- [x] 2-B-4 User + Favorite モデル + マイグレーション（add_user_and_favorites）
+- [x] 2-B-5 Auth コールバック + ユーザー同期（user-service.ts）
+- [x] 2-B-6 認証UI（ログイン/サインアップページ、確認ページ）
+- [x] 2-B-7 AuthContext + useAuth フック
+- [x] 2-B-8 ヘッダー更新（AuthButton組み込み）
+- [x] 2-B-9 バリデーションスキーマ（auth-schema.ts）
+- [x] 2-B-10 テスト（ユニット: user-service + auth-schema）
+
+### Phase 2-C: 管理画面（CMS）✅ 完了（画像アップロード除く）
+- [x] 2-C-1 管理画面レイアウト（/admin layout、サイドナビ、admin認可）
+- [x] 2-C-2 ダッシュボード（/admin、統計表示）
+- [x] 2-C-3 シューズ一覧（/admin/shoes、動的テーブル）
+- [x] 2-C-4 シューズ作成/編集フォーム（ShoeForm、TrainingFitEditor）
+- [x] 2-C-5 画像アップロード（Supabase Storage連携）
+- [x] 2-C-6 管理用APIエンドポイント（POST/PUT/DELETE /api/admin/shoes）
+- [x] 2-C-7 管理用バリデーションスキーマ（admin-shoe-schema.ts）
+- [x] 2-C-8 認可ガード（requireAuth、requireAdmin）
+- [x] 2-C-9 テスト（ユニット）
+
+### Phase 2-D: お気に入りクラウド同期 ✅ 完了
+- [x] 2-D-1 Favorite モデル + マイグレーション（add_user_and_favorites）
+- [x] 2-D-2 お気に入りAPI（GET/POST /api/favorites、DELETE、POST /sync）
+- [x] 2-D-3 useFavorites フック改修（認証状態で動作切替、楽観的更新、同期ロジック）
+- [x] 2-D-4 テスト（ユニット: favorite-service + useFavorites）
+
+### Phase 2-E: シューズ寿命トラッカー ✅ 完了
+- [x] 2-E-1 UserShoe / RunningLog モデル + マイグレーション（add_shoe_tracker）
+- [x] 2-E-2 マイシューズ管理API（user-shoe-service.ts）
+- [x] 2-E-3 マイシューズ一覧ページ（/my-shoes、耐久度プログレスバー）
+- [x] 2-E-4 走行ログ入力フォーム（RunningLogForm）
+- [x] 2-E-5 走行ログ履歴/統計（/my-shoes/[id]）
+- [x] 2-E-6 交換時期アラート（80%/100%閾値、一覧ページに警告バナー）
+- [x] 2-E-7 ヘッダーナビゲーション更新（ログイン時にマイシューズ追加）
+- [x] 2-E-8 テスト（ユニット: user-shoe-service + shoe-life + tracker-schema）
+
+### Phase 2-F: トレーニング計画連携 ✅ 完了
+- [x] 2-F-1 TrainingPlan / WeeklyMenu / MenuItem モデル + マイグレーション
+- [x] 2-F-2 トレーニング計画API（training-plan-service.ts）
+- [x] 2-F-3 ローテーション提案アルゴリズム（rotation-service.ts）
+- [x] 2-F-4 計画一覧ページ（/training）
+- [x] 2-F-5 計画作成ウィザード（/training/new、3ステップ）
+- [x] 2-F-6 週間カレンダービュー（/training/[id]）
+- [x] 2-F-7 テンプレートデータ（training-templates.ts、タイム別4種）
+- [x] 2-F-8 ヘッダーナビゲーション更新（ログイン時にトレーニング追加）
+- [x] 2-F-9 テスト（ユニット: training-plan-service + rotation-service + training-plan-schema）
 
 ## Phase 3: 外部連携
 - [ ] 価格比較（楽天API / Amazon PA-APIで実売価格取得）

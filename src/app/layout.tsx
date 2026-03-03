@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { CompareProvider } from "@/contexts/CompareContext";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://runselect.vercel.app";
 
@@ -46,15 +47,17 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
-        <CompareProvider>
-          <FavoritesProvider>
-            <Header />
-            <main style={{ minHeight: "calc(100vh - 120px)", paddingBottom: "48px" }}>
-              {children}
-            </main>
-            <Footer />
-          </FavoritesProvider>
-        </CompareProvider>
+        <AuthProvider>
+          <CompareProvider>
+            <FavoritesProvider>
+              <Header />
+              <main style={{ minHeight: "calc(100vh - 120px)", paddingBottom: "48px" }}>
+                {children}
+              </main>
+              <Footer />
+            </FavoritesProvider>
+          </CompareProvider>
+        </AuthProvider>
       </body>
     </html>
   );

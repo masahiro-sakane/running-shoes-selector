@@ -51,6 +51,9 @@ model Shoe {
   // リレーション
   trainingFit      TrainingFit?
   reviews          Review[]
+  favorites        Favorite[]
+  userShoes        UserShoe[]
+  menuItems        MenuItem[]
 
   @@unique([brand, model])
   @@index([brand])
@@ -73,6 +76,75 @@ model TrainingFit {
   recovery   Int    @default(3) // リカバリー
 }
 
+// Supabase Auth と同期するユーザーモデル
+model User {
+  id          String     @id // Supabase Auth の uid
+  email       String     @unique
+  displayName String?
+  role        String     @default("user") // "user" | "admin"
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  favorites      Favorite[]
+  userShoes      UserShoe[]
+  runningLogs    RunningLog[]
+  trainingPlans  TrainingPlan[]
+}
+
+// お気に入りシューズ（User と Shoe の中間テーブル）
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shoeId    String
+  shoe      Shoe     @relation(fields: [shoeId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, shoeId])
+  @@index([userId])
+  @@index([shoeId])
+}
+
+// シューズ寿命トラッカー
+model UserShoe {
+  id              String       @id @default(cuid())
+  userId          String
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shoeId          String
+  shoe            Shoe         @relation(fields: [shoeId], references: [id], onDelete: Cascade)
+  nickname        String?
+  purchaseDate    DateTime?
+  totalDistanceKm Float        @default(0)
+  status          String       @default("active")  // "active" | "retired"
+  retiredAt       DateTime?
+  note            String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  runningLogs     RunningLog[]
+
+  @@index([userId])
+  @@index([shoeId])
+}
+
+model RunningLog {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userShoeId   String
+  userShoe     UserShoe  @relation(fields: [userShoeId], references: [id], onDelete: Cascade)
+  date         DateTime
+  distanceKm   Float
+  durationMin  Int?
+  trainingType String?
+  note         String?
+  createdAt    DateTime  @default(now())
+
+  @@index([userId])
+  @@index([userShoeId])
+  @@index([date])
+}
+
 // ユーザーレビュー（Phase 4用、今は基盤のみ）
 model Review {
   id        String   @id @default(cuid())
@@ -83,4 +155,55 @@ model Review {
   createdAt DateTime @default(now())
 
   @@index([shoeId])
+}
+
+// トレーニング計画
+model TrainingPlan {
+  id               String        @id @default(cuid())
+  userId           String
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name             String
+  targetRace       String?
+  targetDate       DateTime?
+  targetTime       String?       // 例: "3:30:00"
+  weeklyDistanceKm Float?
+  status           String        @default("active")  // "active" | "completed" | "archived"
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  weeklyMenus      WeeklyMenu[]
+
+  @@index([userId])
+}
+
+// 週間トレーニングメニュー
+model WeeklyMenu {
+  id               String        @id @default(cuid())
+  trainingPlanId   String
+  trainingPlan     TrainingPlan  @relation(fields: [trainingPlanId], references: [id], onDelete: Cascade)
+  weekNumber       Int
+  startDate        DateTime
+  theme            String?
+  totalDistanceKm  Float?
+  createdAt        DateTime      @default(now())
+
+  menuItems        MenuItem[]
+
+  @@unique([trainingPlanId, weekNumber])
+  @@index([trainingPlanId])
+}
+
+// 日次メニューアイテム
+model MenuItem {
+  id               String      @id @default(cuid())
+  weeklyMenuId     String
+  weeklyMenu       WeeklyMenu  @relation(fields: [weeklyMenuId], references: [id], onDelete: Cascade)
+  dayOfWeek        Int         // 0=日 〜 6=土
+  trainingType     String      // "dailyJog"|"paceRun"|"interval"|"longRun"|"race"|"recovery"|"rest"
+  distanceKm       Float?
+  description      String?
+  suggestedShoeId  String?
+  suggestedShoe    Shoe?       @relation(fields: [suggestedShoeId], references: [id])
+
+  @@index([weeklyMenuId])
 }

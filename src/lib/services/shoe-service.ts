@@ -34,6 +34,8 @@ export interface ShoeWithFit {
   officialUrl: string | null;
   imageUrl: string | null;
   description: string | null;
+  createdAt: Date;
+  updatedAt: Date;
   trainingFit: {
     dailyJog: number;
     paceRun: number;
