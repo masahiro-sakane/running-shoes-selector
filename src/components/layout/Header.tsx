@@ -61,7 +61,7 @@ export default function Header() {
         RunSelect
       </Link>
 
-      <nav style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+      <nav aria-label="メインナビゲーション" style={{ display: "flex", gap: "8px", alignItems: "center" }}>
         {NAV_LINKS.map(({ href, label }) => {
           const isActive = pathname === href || pathname.startsWith(href + "/");
           return (
@@ -130,6 +130,7 @@ export default function Header() {
           比較
           {count > 0 && (
             <span
+              aria-label={count + "足を比較中"}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -179,6 +180,7 @@ export default function Header() {
 
                 <button
                   onClick={handleSignOut}
+                  aria-label="サインアウト"
                   style={{
                     padding: "4px 10px",
                     background: "rgba(255,255,255,0.15)",

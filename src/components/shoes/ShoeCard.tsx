@@ -77,11 +77,11 @@ export default function ShoeCard({ shoe }: ShoeCardProps) {
                   top: "50%",
                   left: "50%",
                   transform: "translate(-50%, -50%)",
-                  fontSize: "32px",
-                  opacity: 0.2,
+                  fontSize: "14px",
+                  color: "#97a0af",
                 }}
               >
-                👟
+                NO IMAGE
               </div>
             )}
           </div>

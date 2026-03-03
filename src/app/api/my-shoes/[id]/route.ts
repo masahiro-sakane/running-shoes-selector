@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
+import { z } from "zod"
 import { requireAuth } from "@/lib/auth/guard"
 import { deleteUserShoe, retireUserShoe } from "@/lib/services/user-shoe-service"
+
+const retireActionSchema = z.object({
+  action: z.literal("retire"),
+})
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -43,10 +48,10 @@ export async function PUT(request: NextRequest, context: RouteContext) {
     )
   }
 
-  const parsed = body as { action?: string }
-  if (parsed.action !== "retire") {
+  const parsed = retireActionSchema.safeParse(body)
+  if (!parsed.success) {
     return NextResponse.json(
-      { success: false, error: "Invalid action" },
+      { success: false, error: "Invalid action", details: parsed.error.flatten() },
       { status: 400 }
     )
   }

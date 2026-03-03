@@ -55,7 +55,9 @@ export async function uploadShoeImage(file: File, shoeId: string): Promise<strin
   }
 
   const supabase = createClient();
-  const path = `shoes/${shoeId}/${Date.now()}-${file.name}`;
+  const ext = file.name.split(".").pop()?.toLowerCase() ?? "bin";
+  const safeExt = /^[a-z0-9]+$/.test(ext) ? ext : "bin";
+  const path = `shoes/${shoeId}/${Date.now()}-${crypto.randomUUID()}.${safeExt}`;
 
   const { error } = await supabase.storage.from(BUCKET_NAME).upload(path, file, {
     contentType: file.type,
@@ -89,6 +91,10 @@ export async function deleteShoeImage(url: string): Promise<void> {
   }
 
   const filePath = url.slice(prefixIndex + storagePrefix.length);
+
+  if (filePath.includes("..") || filePath.startsWith("/")) {
+    throw new Error("Invalid file path");
+  }
 
   const { error } = await supabase.storage.from(BUCKET_NAME).remove([filePath]);
 

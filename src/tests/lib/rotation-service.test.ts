@@ -74,8 +74,8 @@ describe("suggestRotation", () => {
       },
     }
     mockUserShoeFindMany.mockResolvedValueOnce([
-      { id: "us-1", userId: "user-1", shoeId: "shoe-1", status: "active", shoe: mockShoe },
-    ])
+      { id: "us-1", userId: "user-1", shoeId: "shoe-1", status: "active", nickname: null, purchaseDate: null, totalDistanceKm: 0, retiredAt: null, note: null, createdAt: new Date(), updatedAt: new Date(), shoe: mockShoe },
+    ] as never)
     mockWeeklyMenuFindUnique.mockResolvedValueOnce(MOCK_WEEKLY_MENU)
 
     const rotation = await suggestRotation("user-1", "week-1")
@@ -120,9 +120,9 @@ describe("suggestRotation", () => {
       },
     }
     mockUserShoeFindMany.mockResolvedValueOnce([
-      { id: "us-1", userId: "user-1", shoeId: "shoe-1", status: "active", shoe: mockShoe1 },
-      { id: "us-2", userId: "user-1", shoeId: "shoe-2", status: "active", shoe: mockShoe2 },
-    ])
+      { id: "us-1", userId: "user-1", shoeId: "shoe-1", status: "active", nickname: null, purchaseDate: null, totalDistanceKm: 0, retiredAt: null, note: null, createdAt: new Date(), updatedAt: new Date(), shoe: mockShoe1 },
+      { id: "us-2", userId: "user-1", shoeId: "shoe-2", status: "active", nickname: null, purchaseDate: null, totalDistanceKm: 0, retiredAt: null, note: null, createdAt: new Date(), updatedAt: new Date(), shoe: mockShoe2 },
+    ] as never)
     mockWeeklyMenuFindUnique.mockResolvedValueOnce(MOCK_WEEKLY_MENU)
 
     const rotation = await suggestRotation("user-1", "week-1")
@@ -153,7 +153,15 @@ describe("applyRotation", () => {
       "item-3": "shoe-1",
     }
 
-    mockMenuItemUpdate.mockResolvedValue({})
+    mockMenuItemUpdate.mockResolvedValue({
+      id: "item-1",
+      weeklyMenuId: "week-1",
+      dayOfWeek: 0,
+      trainingType: "rest",
+      distanceKm: null,
+      description: "休養",
+      suggestedShoeId: null,
+    })
     mockTransaction.mockImplementationOnce(async (updates) => {
       if (Array.isArray(updates)) {
         return Promise.all(updates)

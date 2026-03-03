@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import CompareTable from "@/components/compare/CompareTable";
@@ -23,10 +23,11 @@ export default function CompareClient({ initialShoes, initialIds }: CompareClien
   const [shoes, setShoes] = useState<ShoeWithFit[]>(initialShoes);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const initialIdsRef = useRef(initialIds);
 
   // compareIds が変化したらシューズデータを取得
   useEffect(() => {
-    const ids = compareIds.length > 0 ? compareIds : initialIds;
+    const ids = compareIds.length > 0 ? compareIds : initialIdsRef.current;
     if (ids.length === 0) {
       setShoes([]);
       return;
@@ -58,7 +59,7 @@ export default function CompareClient({ initialShoes, initialIds }: CompareClien
       });
       setLoading(false);
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- shoes はエフェクト内で更新されるため依存に含めると無限ループになる。initialIds は ref 経由で参照。
   }, [compareIds]);
 
   const handleRemove = useCallback(
@@ -187,7 +188,7 @@ export default function CompareClient({ initialShoes, initialIds }: CompareClien
             borderRadius: "12px",
           }}
         >
-          <p style={{ fontSize: "48px", margin: "0 0 16px" }}>👟</p>
+          <p style={{ fontSize: "14px", color: "#97a0af", margin: "0 0 16px" }}>NO IMAGE</p>
           <h2
             style={{
               fontSize: "20px",

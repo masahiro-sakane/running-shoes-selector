@@ -79,6 +79,13 @@ describe("getTrainingPlanById", () => {
       id: "plan-1",
       userId: "user-1",
       name: "テスト計画",
+      targetRace: null,
+      targetDate: null,
+      targetTime: null,
+      weeklyDistanceKm: null,
+      status: "active",
+      createdAt: new Date(),
+      updatedAt: new Date(),
       weeklyMenus: [],
     }
     mockFindFirst.mockResolvedValueOnce(mockPlan)
@@ -106,6 +113,10 @@ describe("createTrainingPlan（テンプレートなし）", () => {
       id: "plan-new",
       userId: "user-1",
       name: "新しい計画",
+      targetRace: null,
+      targetDate: null,
+      targetTime: null,
+      weeklyDistanceKm: null,
       status: "active",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -133,6 +144,10 @@ describe("createTrainingPlan（テンプレートあり）", () => {
       id: "plan-template",
       userId: "user-1",
       name: "テンプレート計画",
+      targetRace: null,
+      targetDate: null,
+      targetTime: null,
+      weeklyDistanceKm: null,
       status: "active",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -145,7 +160,7 @@ describe("createTrainingPlan（テンプレートあり）", () => {
           weeklyMenu: { create: vi.fn().mockResolvedValue({ id: "week-1" }) },
           menuItem: { create: vi.fn().mockResolvedValue({ id: "item-1" }) },
         }
-        return callback(tx)
+        return callback(tx as never)
       }
       return mockPlan
     })
@@ -168,7 +183,18 @@ describe("createTrainingPlan（テンプレートあり）", () => {
 
 describe("deleteTrainingPlan", () => {
   it("計画が存在する場合は削除する", async () => {
-    const mockPlan = { id: "plan-1", userId: "user-1", name: "削除計画" }
+    const mockPlan = {
+      id: "plan-1",
+      userId: "user-1",
+      name: "削除計画",
+      targetRace: null,
+      targetDate: null,
+      targetTime: null,
+      weeklyDistanceKm: null,
+      status: "active",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
     mockFindFirst.mockResolvedValueOnce(mockPlan)
     mockDelete.mockResolvedValueOnce(mockPlan)
 

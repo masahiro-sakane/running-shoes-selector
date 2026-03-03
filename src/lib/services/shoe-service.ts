@@ -82,9 +82,9 @@ function buildWhere(filters: ShoeFilterParsed): Prisma.ShoeWhereInput {
   if (filters.query) {
     const q = filters.query.trim();
     where.OR = [
-      { brand: { contains: q } },
-      { model: { contains: q } },
-      { description: { contains: q } },
+      { brand: { contains: q, mode: "insensitive" } },
+      { model: { contains: q, mode: "insensitive" } },
+      { description: { contains: q, mode: "insensitive" } },
     ];
   }
 

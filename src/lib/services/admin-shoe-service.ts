@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
+import { Prisma } from "@/generated/prisma/client";
 import type { CreateShoeInput, UpdateShoeInput } from "@/lib/validations/admin-shoe-schema";
 
 /**
@@ -17,32 +18,41 @@ export async function adminCreateShoe(data: CreateShoeInput) {
     ...shoeData
   } = data;
 
-  return prisma.$transaction(async (tx) => {
-    const shoe = await tx.shoe.create({
-      data: {
-        ...shoeData,
-        officialUrl: officialUrl || null,
-        imageUrl: imageUrl || null,
-      },
-    });
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const shoe = await tx.shoe.create({
+        data: {
+          ...shoeData,
+          officialUrl: officialUrl || null,
+          imageUrl: imageUrl || null,
+        },
+      });
 
-    await tx.trainingFit.create({
-      data: {
-        shoeId: shoe.id,
-        dailyJog,
-        paceRun,
-        interval,
-        longRun,
-        race,
-        recovery,
-      },
-    });
+      await tx.trainingFit.create({
+        data: {
+          shoeId: shoe.id,
+          dailyJog,
+          paceRun,
+          interval,
+          longRun,
+          race,
+          recovery,
+        },
+      });
 
-    return tx.shoe.findUnique({
-      where: { id: shoe.id },
-      include: { trainingFit: true },
+      return tx.shoe.findUnique({
+        where: { id: shoe.id },
+        include: { trainingFit: true },
+      });
     });
-  });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2002") {
+        throw new Error("このモデル名は既に登録されています");
+      }
+    }
+    throw error;
+  }
 }
 
 /**
@@ -73,42 +83,63 @@ export async function adminUpdateShoe(id: string, data: UpdateShoeInput) {
   if (officialUrl !== undefined) updateData.officialUrl = officialUrl || null;
   if (imageUrl !== undefined) updateData.imageUrl = imageUrl || null;
 
-  return prisma.$transaction(async (tx) => {
-    const shoe = await tx.shoe.update({
-      where: { id },
-      data: updateData,
-    });
-
-    if (Object.keys(trainingFitData).length > 0) {
-      await tx.trainingFit.upsert({
-        where: { shoeId: id },
-        update: trainingFitData,
-        create: {
-          shoeId: id,
-          dailyJog: trainingFitData.dailyJog ?? 3,
-          paceRun: trainingFitData.paceRun ?? 3,
-          interval: trainingFitData.interval ?? 3,
-          longRun: trainingFitData.longRun ?? 3,
-          race: trainingFitData.race ?? 3,
-          recovery: trainingFitData.recovery ?? 3,
-        },
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const shoe = await tx.shoe.update({
+        where: { id },
+        data: updateData,
       });
-    }
 
-    return tx.shoe.findUnique({
-      where: { id: shoe.id },
-      include: { trainingFit: true },
+      if (Object.keys(trainingFitData).length > 0) {
+        await tx.trainingFit.upsert({
+          where: { shoeId: id },
+          update: trainingFitData,
+          create: {
+            shoeId: id,
+            dailyJog: trainingFitData.dailyJog ?? 3,
+            paceRun: trainingFitData.paceRun ?? 3,
+            interval: trainingFitData.interval ?? 3,
+            longRun: trainingFitData.longRun ?? 3,
+            race: trainingFitData.race ?? 3,
+            recovery: trainingFitData.recovery ?? 3,
+          },
+        });
+      }
+
+      return tx.shoe.findUnique({
+        where: { id: shoe.id },
+        include: { trainingFit: true },
+      });
     });
-  });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2002") {
+        throw new Error("このモデル名は既に登録されています");
+      }
+      if (error.code === "P2025") {
+        throw new Error("シューズが見つかりません");
+      }
+    }
+    throw error;
+  }
 }
 
 /**
  * シューズ削除（Cascade で TrainingFit も削除）
  */
 export async function adminDeleteShoe(id: string) {
-  return prisma.shoe.delete({
-    where: { id },
-  });
+  try {
+    return await prisma.shoe.delete({
+      where: { id },
+    });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2025") {
+        throw new Error("シューズが見つかりません");
+      }
+    }
+    throw error;
+  }
 }
 
 export interface AdminStats {

@@ -124,7 +124,7 @@ export async function deleteRunningLog(id: string, userId: string) {
     })
 
     await tx.userShoe.update({
-      where: { id: log.userShoeId },
+      where: { id: log.userShoeId, userId },
       data: {
         totalDistanceKm: {
           decrement: log.distanceKm,

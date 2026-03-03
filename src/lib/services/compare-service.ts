@@ -79,11 +79,10 @@ export function buildRadarData(shoes: ShoeWithFit[]): RadarDataPoint[] {
   const scoresPerShoe = shoes.map((s) => calcRadarScores(s));
 
   return metrics.map(({ key, label }) => {
-    const point: RadarDataPoint = { metric: key, label };
-    shoes.forEach((shoe, idx) => {
-      point[shoe.id] = scoresPerShoe[idx][key];
-    });
-    return point;
+    const shoeScores = Object.fromEntries(
+      shoes.map((shoe, idx) => [shoe.id, scoresPerShoe[idx][key]])
+    );
+    return { metric: key, label, ...shoeScores } as RadarDataPoint;
   });
 }
 
@@ -172,7 +171,7 @@ export function getBestIndices(row: CompareSpecRow): Set<number> {
   const numericValues = row.values.map((v) =>
     typeof v === "number" ? v : null
   );
-  const valids = numericValues.filter((v) => v !== null) as number[];
+  const valids = numericValues.filter((v): v is number => v !== null);
   if (valids.length < 2) return new Set();
 
   const best = row.lowerIsBetter ? Math.min(...valids) : Math.max(...valids);

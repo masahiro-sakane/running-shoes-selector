@@ -13,10 +13,25 @@ const profileSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  let body: unknown;
   try {
-    const body = await request.json();
-    const profile = profileSchema.parse(body);
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      { success: false, error: "Invalid JSON" },
+      { status: 400 }
+    );
+  }
 
+  const parsed = profileSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { success: false, error: "Invalid profile data", details: parsed.error.flatten() },
+      { status: 400 }
+    );
+  }
+
+  try {
     // 全シューズを取得（最大100件）
     const { shoes } = await getShoes({
       page: 1,
@@ -24,7 +39,7 @@ export async function POST(request: Request) {
       sort: "name_asc",
     });
 
-    const result = await getRecommendations(shoes, profile);
+    const result = await getRecommendations(shoes, parsed.data);
 
     // shoeIdをShoeWithFitデータに変換
     const shoeMap = new Map(shoes.map((s) => [s.id, s]));
@@ -34,17 +49,15 @@ export async function POST(request: Request) {
     }));
 
     return NextResponse.json({
+      success: true,
       primary: primaryWithDetails,
       rotation: result.rotation,
     });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: "Invalid profile data", details: error.issues },
-        { status: 400 }
-      );
-    }
     console.error("Recommend API error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

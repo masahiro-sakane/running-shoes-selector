@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 interface MenuItemData {
   id: string
@@ -52,6 +53,7 @@ export function WeeklyCalendar({
   planId,
   onRotationApplied,
 }: WeeklyCalendarProps) {
+  const router = useRouter()
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [localMenuItems, setLocalMenuItems] = useState<MenuItemData[]>(weeklyMenu.menuItems)
@@ -74,8 +76,8 @@ export function WeeklyCalendar({
 
       onRotationApplied?.(json.rotation)
 
-      // ローカル状態の suggestedShoeId を更新するため、ページを再ロードする
-      window.location.reload()
+      // ローカル状態の suggestedShoeId を更新するため、サーバーデータを再取得する
+      router.refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : "エラーが発生しました")
     } finally {

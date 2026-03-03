@@ -32,6 +32,8 @@ function makeShoe(overrides: Partial<ShoeWithFit>): ShoeWithFit {
     officialUrl: null,
     imageUrl: null,
     description: null,
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
     trainingFit: {
       dailyJog: 5,
       paceRun: 3,

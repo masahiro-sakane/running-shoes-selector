@@ -44,7 +44,14 @@ export async function POST(request: NextRequest, context: RouteContext) {
     )
   }
 
-  const dataWithShoeId = { ...(body as object), userShoeId: id }
+  if (typeof body !== "object" || body === null || Array.isArray(body)) {
+    return NextResponse.json(
+      { success: false, error: "Request body must be a JSON object" },
+      { status: 400 }
+    )
+  }
+
+  const dataWithShoeId = { ...body, userShoeId: id }
   const parsed = createRunningLogSchema.safeParse(dataWithShoeId)
   if (!parsed.success) {
     return NextResponse.json(

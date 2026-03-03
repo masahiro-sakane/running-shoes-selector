@@ -115,7 +115,12 @@
       "Bash(node:*)",
       "Bash(cd /c/Develop/workspace/claude/runnning-shoes-sellector && npm run db:seed 2>&1)",
       "Bash(echo generate OK:*)",
-      "Bash(vercel whoami:*)"
+      "Bash(vercel whoami:*)",
+      "Bash(vercel login:*)",
+      "WebFetch(domain:running-shoes-selector-d3d2qgamu-masahiros-projects-4ac07ad8.vercel.app)",
+      "Bash(vercel env:*)",
+      "Bash(vercel ls:*)",
+      "Bash(vercel:*)"
     ]
   }
 }

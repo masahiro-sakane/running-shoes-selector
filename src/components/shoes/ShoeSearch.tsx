@@ -34,19 +34,25 @@ export default function ShoeSearch() {
 
   return (
     <div style={{ position: "relative", flex: 1, maxWidth: "400px" }}>
-      <span
+      <svg
+        aria-hidden="true"
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="none"
         style={{
           position: "absolute",
           left: "10px",
           top: "50%",
           transform: "translateY(-50%)",
-          color: "#6b778c",
-          fontSize: "16px",
           pointerEvents: "none",
         }}
       >
-        🔍
-      </span>
+        <path
+          d="M11.5 7a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM10.7 11.4a6 6 0 1 1 .7-.7l3.65 3.65a.5.5 0 0 1-.7.7L10.7 11.4Z"
+          fill="#6b778c"
+        />
+      </svg>
       <input
         type="search"
         value={value}

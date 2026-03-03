@@ -40,7 +40,7 @@ beforeEach(() => {
 describe("requireAuth", () => {
   it("未認証の場合は 401 を返す", async () => {
     mockCreateClient.mockResolvedValueOnce(
-      makeSupabaseMock(null) as unknown as ReturnType<typeof createClient>
+      makeSupabaseMock(null) as unknown as Awaited<ReturnType<typeof createClient>>
     );
 
     const request = makeRequest();
@@ -58,7 +58,7 @@ describe("requireAuth", () => {
 
   it("Supabase がエラーを返す場合は 401 を返す", async () => {
     mockCreateClient.mockResolvedValueOnce(
-      makeSupabaseMock(null, new Error("Auth error")) as unknown as ReturnType<typeof createClient>
+      makeSupabaseMock(null, new Error("Auth error")) as unknown as Awaited<ReturnType<typeof createClient>>
     );
 
     const request = makeRequest();
@@ -73,7 +73,7 @@ describe("requireAuth", () => {
 
   it("認証済みの場合は userId を返す", async () => {
     mockCreateClient.mockResolvedValueOnce(
-      makeSupabaseMock({ id: "user-id-1" }) as unknown as ReturnType<typeof createClient>
+      makeSupabaseMock({ id: "user-id-1" }) as unknown as Awaited<ReturnType<typeof createClient>>
     );
 
     const request = makeRequest();
@@ -87,7 +87,7 @@ describe("requireAuth", () => {
 describe("requireAdmin", () => {
   it("未認証の場合は 401 を返す", async () => {
     mockCreateClient.mockResolvedValueOnce(
-      makeSupabaseMock(null) as unknown as ReturnType<typeof createClient>
+      makeSupabaseMock(null) as unknown as Awaited<ReturnType<typeof createClient>>
     );
 
     const request = makeRequest();
@@ -102,7 +102,7 @@ describe("requireAdmin", () => {
 
   it("認証済みだが非 admin の場合は 403 を返す", async () => {
     mockCreateClient.mockResolvedValueOnce(
-      makeSupabaseMock({ id: "user-id-1" }) as unknown as ReturnType<typeof createClient>
+      makeSupabaseMock({ id: "user-id-1" }) as unknown as Awaited<ReturnType<typeof createClient>>
     );
     mockIsAdmin.mockResolvedValueOnce(false);
 
@@ -121,7 +121,7 @@ describe("requireAdmin", () => {
 
   it("認証済みで admin の場合は userId を返す", async () => {
     mockCreateClient.mockResolvedValueOnce(
-      makeSupabaseMock({ id: "admin-user-id" }) as unknown as ReturnType<typeof createClient>
+      makeSupabaseMock({ id: "admin-user-id" }) as unknown as Awaited<ReturnType<typeof createClient>>
     );
     mockIsAdmin.mockResolvedValueOnce(true);
 
@@ -134,7 +134,7 @@ describe("requireAdmin", () => {
 
   it("isAdmin に正しい userId が渡されることを確認する", async () => {
     mockCreateClient.mockResolvedValueOnce(
-      makeSupabaseMock({ id: "verified-user-id" }) as unknown as ReturnType<typeof createClient>
+      makeSupabaseMock({ id: "verified-user-id" }) as unknown as Awaited<ReturnType<typeof createClient>>
     );
     mockIsAdmin.mockResolvedValueOnce(false);
 

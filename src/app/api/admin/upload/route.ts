@@ -60,7 +60,9 @@ export async function POST(request: NextRequest) {
 
   try {
     const supabase = await createClient();
-    const path = `shoes/${shoeId}/${Date.now()}-${file.name}`;
+    const ext = file.name.split(".").pop()?.toLowerCase() ?? "bin";
+    const safeExt = /^[a-z0-9]+$/.test(ext) ? ext : "bin";
+    const path = `shoes/${shoeId}/${Date.now()}-${crypto.randomUUID()}.${safeExt}`;
     const buffer = Buffer.from(await file.arrayBuffer());
 
     const { error: uploadError } = await supabase.storage

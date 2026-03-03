@@ -120,7 +120,7 @@ describe("uploadShoeImage", () => {
       "https://example.supabase.co/storage/v1/object/public/shoe-images/shoes/123/file.jpg"
     );
     expect(mockUpload).toHaveBeenCalledWith(
-      expect.stringMatching(/^shoes\/123\/.+shoe\.jpg$/),
+      expect.stringMatching(/^shoes\/123\/\d+-[0-9a-f-]+\.jpg$/),
       file,
       { contentType: "image/jpeg", upsert: true }
     );
